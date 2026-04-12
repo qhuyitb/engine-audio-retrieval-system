@@ -1,3 +1,6 @@
+## 📁 Project Structure
+
+```bash
 engine-audio-retrieval-system/
 │
 ├── README.md                          # Mô tả dự án, hướng dẫn cài đặt
@@ -103,3 +106,4 @@ engine-audio-retrieval-system/
 └── reports/                           # Báo cáo
     ├── figures/                       # Biểu đồ, spectrogram xuất từ notebook
     └── final_report.pdf
+```bash

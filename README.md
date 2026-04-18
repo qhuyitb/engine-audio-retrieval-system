@@ -1,18 +1,22 @@
+```markdown
+# 🚗 Vehicle Sound Similarity System
+
+Hệ thống tìm kiếm và so sánh độ tương đồng âm thanh các phương tiện giao thông (airplane, car, train, ...).
+
+---
+
+## 📌 Mô tả
+
+Dự án xử lý audio đầu vào, trích xuất đặc trưng và xây dựng mô hình để:
+- So sánh độ tương đồng giữa các âm thanh
+- Truy xuất top-k âm thanh giống nhất
+- Ứng dụng cho bài toán audio retrieval
+
+---
+
+## 📁 Cấu trúc thư mục
+
 ```
-## 📦 Dataset
-
-Dataset không lưu trong repo. Tải về tại:
-👉 [Google Drive - Vehicle Sounds Dataset](https://drive.google.com/drive/folders/1bFD9h3TCubiwOWnEUVhi-ZuHEcAMSB76?usp=drive_link)
-
-### Cách setup:
-1. Tải folder `raw/` từ link trên
-2. Đặt vào `data/raw/`
-3. Chạy chuẩn hóa:
-```
-   python backend/scripts/preprocess_audio.py
-```
-
-
 
 ## 📁 Project Structure
 
@@ -123,3 +127,84 @@ engine-audio-retrieval-system/
     ├── figures/                       # Biểu đồ, spectrogram xuất từ notebook
     └── final_report.pdf
 ```bash
+
+```
+
+---
+
+## 📦 Dataset
+
+Dataset **không được lưu trong repo**. Tải tại:
+
+👉 https://drive.google.com/drive/folders/1bFD9h3TCubiwOWnEUVhi-ZuHEcAMSB76?usp=drive_link
+
+### 🔧 Setup dữ liệu
+
+1. Tải folder `raw/` từ link trên  
+2. Đặt vào thư mục:
+```
+
+data/raw/
+
+```
+3. Chạy script tiền xử lý:
+```
+
+python backend/scripts/preprocess_audio.py
+
+````
+
+---
+
+## ⚙️ Cài đặt
+
+```bash
+pip install -r requirements.txt
+````
+
+---
+
+## 🔊 Tiền xử lý audio
+
+Script `preprocess_audio.py` sẽ:
+
+* Convert audio về **mono**
+* Resample về **22050Hz**
+* Normalize biên độ về **[-1, 1]**
+* Đổi tên và chuẩn hóa label
+
+---
+
+## 🧪 Kiểm tra dataset
+
+```bash
+python backend/scripts/check_dataset.py
+```
+
+---
+
+## 🚀 Hướng phát triển
+
+* Trích xuất đặc trưng (Mel Spectrogram / MFCC)
+* Xây dựng model (CNN / Siamese Network)
+* Triển khai tìm kiếm top-k tương đồng
+* Xây dựng demo (Streamlit / FastAPI)
+
+---
+
+## ⚠️ Lưu ý
+
+* Không commit thư mục `data/raw/` và `data/processed/`
+* Đảm bảo cấu trúc dataset đúng trước khi train
+* Các thành viên phải dùng cùng dataset
+
+---
+
+## 👥 Team
+
+
+```
+```
+
+
+

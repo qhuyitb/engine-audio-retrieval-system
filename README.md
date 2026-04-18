@@ -1,3 +1,19 @@
+```
+## 📦 Dataset
+
+Dataset không lưu trong repo. Tải về tại:
+👉 [Google Drive - Vehicle Sounds Dataset](https://drive.google.com/drive/folders/1bFD9h3TCubiwOWnEUVhi-ZuHEcAMSB76?usp=drive_link)
+
+### Cách setup:
+1. Tải folder `raw/` từ link trên
+2. Đặt vào `data/raw/`
+3. Chạy chuẩn hóa:
+```
+   python backend/scripts/preprocess_audio.py
+```
+
+
+
 ## 📁 Project Structure
 
 ```bash

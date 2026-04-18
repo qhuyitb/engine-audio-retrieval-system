@@ -1,3 +1,14 @@
+"""
+Script tiền xử lý dataset audio:
+- Đọc file .wav từ thư mục raw theo từng class
+- Convert về mono và resample về 22050Hz
+- Chuẩn hóa biên độ về [-1, 1]
+- Đổi tên file và lưu sang thư mục processed theo class chuẩn
+
+Dùng để chuẩn hóa dữ liệu đầu vào trước khi trích xuất đặc trưng và train model.
+"""
+
+
 import os
 import random
 import numpy as np
@@ -55,7 +66,7 @@ for src_name, dst_name in CLASS_MAP.items():
             ok += 1
 
         except Exception as e:
-            print(f"\n  ❌ Lỗi {fname}: {e}")
+            print(f"\nLỗi {fname}: {e}")
             err += 1
 
     print(f"{dst_name}: {ok} files OK, {err} lỗi\n")

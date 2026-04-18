@@ -1,3 +1,13 @@
+"""
+Script kiểm tra nhanh dataset audio:
+- Đếm số file .wav trong từng thư mục class
+- Lấy sample rate (SR), số kênh (mono/stereo)
+- Tính thời lượng (giây) của file mẫu
+
+Dùng để verify dữ liệu raw hoặc processed trước khi train.
+"""
+
+
 import os
 import librosa
 

@@ -1,4 +1,3 @@
-```markdown
 # 🚗 Vehicle Sound Similarity System
 
 Hệ thống tìm kiếm và so sánh độ tương đồng âm thanh các phương tiện giao thông (airplane, car, train, ...).
@@ -14,120 +13,91 @@ Dự án xử lý audio đầu vào, trích xuất đặc trưng và xây dựng
 
 ---
 
-## 📁 Cấu trúc thư mục
-
-```
-
 ## 📁 Project Structure
 
 ```bash
 engine-audio-retrieval-system/
 │
-├── README.md                          # Mô tả dự án, hướng dẫn cài đặt
+├── README.md
 ├── .gitignore
 │
-├── backend/                           # FastAPI + toàn bộ logic Python
+├── backend/
 │   ├── main.py                        # Entry point: uvicorn backend.main:app
-│   ├── requirements.txt               # Python dependencies
-│   ├── .env.example
+│   ├── requirements.txt
 │   │
-│   ├── api/                           # REST API
+│   ├── api/
 │   │   ├── __init__.py
-│   │   ├── routes/
-│   │   │   ├── search.py              # POST /search — upload file, trả top-5
-│   │   │   ├── audio.py               # CRUD audio records
-│   │   │   └── stats.py               # Thống kê dataset
-│   │   └── schemas.py                 # Pydantic schemas
+│   │   ├── schemas.py
+│   │   └── routes/
+│   │       ├── search.py              # POST /search — upload file, trả top-5
+│   │       ├── audio.py               # CRUD audio records
+│   │       └── stats.py               # Thống kê dataset
 │   │
-│   ├── features/                      # Trích xuất đặc trưng âm thanh
-│   │   ├── __init__.py
+│   ├── features/
 │   │   ├── extractor.py               # Pipeline tổng hợp
-│   │   ├── mfcc.py                    # MFCC features
-│   │   ├── spectral.py                # Spectral Centroid, Rolloff, Bandwidth
+│   │   ├── mfcc.py                    # MFCC + spectral features
 │   │   ├── temporal.py                # ZCR, RMS energy, Tempo
-│   │   └── harmonic.py                # Harmonic/Percussive features
+│   │   ├── harmonic.py                # Harmonic/Percussive features
+│   │   └── scaler_params.npz          # StandardScaler params (generated)
 │   │
-│   ├── search/                        # Hệ thống tìm kiếm
-│   │   ├── __init__.py
-│   │   ├── similarity.py              # Cosine, Euclidean similarity
-│   │   ├── indexer.py                 # Xây dựng FAISS index
-│   │   └── retrieval.py              # Query & trả về top-5
+│   ├── db/
+│   │   ├── config.py                  # Qdrant config constants
+│   │   ├── collection.py              # Init/delete/info collection
+│   │   ├── writer.py                  # Upsert/delete points
+│   │   ├── reader.py                  # Get points, stats
+│   │   └── search.py                  # Similarity search + build_payload
 │   │
-│   ├── db/                            # Tầng truy cập CSDL
-│   │   ├── __init__.py
-│   │   ├── models.py                  # ORM models (SQLAlchemy)
-│   │   ├── crud.py                    # Create/Read/Update/Delete
-│   │   └── connection.py              # Kết nối SQLite
+│   ├── search/
+│   │   └── retrieval.py               # Retrieval engine — file .wav → top-5
 │   │
-│   └── scripts/                       # Chạy 1 lần để setup dữ liệu
-│       ├── preprocess_audio.py        # Chuẩn hóa audio (độ dài, sample rate)
-│       ├── extract_all_features.py    # Trích xuất features toàn bộ dataset
-│       ├── build_index.py             # Xây dựng FAISS index
-│       └── evaluate.py               # Đánh giá độ chính xác hệ thống
+│   └── scripts/
+│       ├── check_dataset.py           # Kiểm tra dataset
+│       ├── preprocess_audio.py        # Chuẩn hóa audio
+│       ├── compute_scaler.py          # Tính StandardScaler params
+│       └── extract_all_features.py    # Build Qdrant index
 │
 ├── frontend/                          # Next.js + React
 │   ├── package.json
 │   ├── next.config.js
 │   ├── tsconfig.json
-│   ├── public/
 │   └── src/
-│       ├── app/                       # Next.js App Router
+│       ├── app/
 │       │   ├── layout.tsx
 │       │   ├── page.tsx               # Trang chủ
 │       │   ├── explorer/
-│       │   │   └── page.tsx           # Dataset Explorer — thống kê, nghe thử
-│       │   ├── features/
-│       │   │   └── page.tsx           # Feature Viewer — xem đặc trưng từng file
+│       │   │   └── page.tsx           # Dataset Explorer
 │       │   └── search/
 │       │       └── page.tsx           # Search Engine — trang demo chính
-│       │
 │       ├── components/
-│       │   ├── AudioPlayer.tsx        # Phát audio
-│       │   ├── Waveform.tsx           # Vẽ waveform + spectrogram
-│       │   ├── FeatureTable.tsx       # Bảng MFCC, spectral values
-│       │   ├── SimilarityChart.tsx    # Bar chart điểm similarity
-│       │   ├── ResultCard.tsx         # Hiển thị 1 kết quả trong top-5
-│       │   └── SearchPipeline.tsx     # Kết quả trung gian step-by-step
-│       │
+│       │   ├── AudioPlayer.tsx
+│       │   ├── SimilarityChart.tsx
+│       │   ├── ResultCard.tsx
+│       │   └── SearchPipeline.tsx
 │       └── lib/
-│           ├── api.ts                 # Gọi FastAPI endpoints
-│           └── types.ts               # TypeScript types/interfaces
+│           ├── api.ts
+│           └── types.ts
 │
-├── data/                              # Toàn bộ dữ liệu
-│   ├── raw/                           # File âm thanh gốc 500+ files
-│   │   ├── diesel/
-│   │   ├── gasoline/
-│   │   ├── electric/
-│   │   ├── turbine/
-│   │   └── ...
-│   ├── processed/                     # File đã chuẩn hóa (cùng độ dài, sample rate)
-│   ├── metadata/
-│   │   ├── audio_metadata.csv         # Tên file, loại động cơ, duration, sr...
-│   │   └── feature_vectors.csv        # Vector đặc trưng của từng file
-│   └── indexes/                       # Generated, gitignored
-│       ├── faiss_index.bin
-│       └── id_mapping.json            # Map FAISS index → file ID trong DB
+├── data/
+│   ├── raw/                           # File âm thanh gốc (gitignored)
+│   │   ├── Airplane/
+│   │   ├── Bics/
+│   │   ├── Bus/
+│   │   ├── Cars/
+│   │   ├── Helicopter/
+│   │   ├── Motocycles/
+│   │   ├── Train/
+│   │   └── Truck/
+│   └── processed/                     # File đã chuẩn hóa (gitignored)
+│       ├── airplane/
+│       ├── bicycle/
+│       ├── bus/
+│       ├── car/
+│       ├── helicopter/
+│       ├── motorcycle/
+│       ├── train/
+│       └── truck/
 │
-├── database/                          # CSDL
-│   ├── schema.sql                     # Schema SQLite
-│   └── engine_sounds.db               # SQLite database
-│
-├── notebooks/                         # Jupyter — phân tích & báo cáo
-│   ├── 01_dataset_exploration.ipynb
-│   ├── 02_feature_analysis.ipynb
-│   ├── 03_similarity_search_demo.ipynb
-│   └── 04_evaluation_results.ipynb
-│
-├── tests/                             # Unit tests
-│   ├── test_features.py
-│   ├── test_search.py
-│   └── test_db.py
-│
-└── reports/                           # Báo cáo
-    ├── figures/                       # Biểu đồ, spectrogram xuất từ notebook
-    └── final_report.pdf
-```bash
-
+└── qdrant_storage/                    # Qdrant data volume (gitignored)
 ```
 
 ---
@@ -140,71 +110,120 @@ Dataset **không được lưu trong repo**. Tải tại:
 
 ### 🔧 Setup dữ liệu
 
-1. Tải folder `raw/` từ link trên  
-2. Đặt vào thư mục:
+1. Tải folder từ link trên và giải nén
+
+2. Sau khi giải nén sẽ có cấu trúc:
+```
+engine-audio-dataset/        ← xóa thư mục bọc ngoài này
+    Airplane/
+    Bics/
+    Bus/
+    ...
 ```
 
+3. Chuyển các thư mục con vào thẳng `data/raw/` — kết quả đúng:
+```
 data/raw/
-
+    Airplane/
+    Bics/
+    Bus/
+    Cars/
+    Helicopter/
+    Motocycles/
+    Train/
+    Truck/
 ```
-3. Chạy script tiền xử lý:
+
+4. Chạy script tiền xử lý:
+```bash
+python -m backend.scripts.preprocess_audio
 ```
-
-python backend/scripts/preprocess_audio.py
-
-````
 
 ---
 
 ## ⚙️ Cài đặt
 
 ```bash
-pip install -r requirements.txt
-````
+# 1. Tạo và kích hoạt virtual environment
+python -m venv .venv
+source .venv/bin/activate        # Linux/Mac
+.venv\Scripts\activate           # Windows
+
+# 2. Cài dependencies
+pip install -r backend/requirements.txt
+
+# 3. Khởi động Qdrant
+docker run -d -p 6333:6333 \
+  -v ${PWD}/qdrant_storage:/qdrant/storage \
+  qdrant/qdrant
+```
+
+---
+
+## 🚀 Chạy hệ thống
+
+```bash
+# Bước 1: Kiểm tra dataset
+python -m backend.scripts.check_dataset
+
+# Bước 2: Tiền xử lý audio
+python -m backend.scripts.preprocess_audio
+
+# Bước 3: Tính StandardScaler params
+python -m backend.scripts.compute_scaler
+
+# Bước 4: Build Qdrant index
+python -m backend.scripts.extract_all_features
+
+# Bước 5: Chạy API server
+python -m uvicorn backend.main:app --reload --port 8000
+
+# Bước 6: Test retrieval
+python -m backend.search.retrieval data/processed/car/car_001.wav
+```
 
 ---
 
 ## 🔊 Tiền xử lý audio
 
 Script `preprocess_audio.py` sẽ:
-
-* Convert audio về **mono**
-* Resample về **22050Hz**
-* Normalize biên độ về **[-1, 1]**
-* Đổi tên và chuẩn hóa label
-
----
-
-## 🧪 Kiểm tra dataset
-
-```bash
-python backend/scripts/check_dataset.py
-```
-
----
-
-## 🚀 Hướng phát triển
-
-* Trích xuất đặc trưng (Mel Spectrogram / MFCC)
-* Xây dựng model (CNN / Siamese Network)
-* Triển khai tìm kiếm top-k tương đồng
-* Xây dựng demo (Streamlit / FastAPI)
+- Convert audio về **mono**
+- Resample về **22050 Hz**
+- Normalize biên độ về **[-1, 1]**
+- Đổi tên và chuẩn hóa theo class label
 
 ---
 
 ## ⚠️ Lưu ý
 
-* Không commit thư mục `data/raw/` và `data/processed/`
-* Đảm bảo cấu trúc dataset đúng trước khi train
-* Các thành viên phải dùng cùng dataset
+- Không commit thư mục `data/raw/`, `data/processed/`, `qdrant_storage/`
+- Đảm bảo Docker đang chạy trước khi start API server
+- Phải chạy `compute_scaler.py` trước `extract_all_features.py`
+- Các thành viên phải dùng cùng dataset và cùng `scaler_params.npz`
 
 ---
 
-## 👥 Team
 
+## 📄 License
 
-```
-```
+MIT License
 
+Copyright (c) 2026 Quang Huy
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

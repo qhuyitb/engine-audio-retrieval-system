@@ -1,0 +1,204 @@
+{
+  "k": 5,
+  "classes": [
+    "airplane",
+    "bicycle",
+    "bus",
+    "car",
+    "helicopter",
+    "motorcycle",
+    "train",
+    "truck"
+  ],
+  "matrix_pct": {
+    "airplane": {
+      "airplane": 82.6,
+      "bicycle": 1.8,
+      "bus": 1.8,
+      "car": 1.2,
+      "helicopter": 3.8,
+      "motorcycle": 2.0,
+      "train": 0.6,
+      "truck": 6.2
+    },
+    "bicycle": {
+      "airplane": 0.2,
+      "bicycle": 97.6,
+      "bus": 0.0,
+      "car": 0.4,
+      "helicopter": 1.2,
+      "motorcycle": 0.4,
+      "train": 0.0,
+      "truck": 0.2
+    },
+    "bus": {
+      "airplane": 1.0,
+      "bicycle": 0.0,
+      "bus": 98.8,
+      "car": 0.0,
+      "helicopter": 0.0,
+      "motorcycle": 0.2,
+      "train": 0.0,
+      "truck": 0.0
+    },
+    "car": {
+      "airplane": 2.6,
+      "bicycle": 1.4,
+      "bus": 0.0,
+      "car": 89.4,
+      "helicopter": 1.8,
+      "motorcycle": 2.4,
+      "train": 0.0,
+      "truck": 2.4
+    },
+    "helicopter": {
+      "airplane": 3.8,
+      "bicycle": 12.2,
+      "bus": 2.8,
+      "car": 3.0,
+      "helicopter": 65.8,
+      "motorcycle": 6.0,
+      "train": 0.8,
+      "truck": 5.6
+    },
+    "motorcycle": {
+      "airplane": 1.8,
+      "bicycle": 1.8,
+      "bus": 2.6,
+      "car": 3.0,
+      "helicopter": 2.0,
+      "motorcycle": 85.2,
+      "train": 2.0,
+      "truck": 1.6
+    },
+    "train": {
+      "airplane": 0.8,
+      "bicycle": 1.2,
+      "bus": 0.2,
+      "car": 1.2,
+      "helicopter": 0.8,
+      "motorcycle": 2.2,
+      "train": 92.8,
+      "truck": 0.8
+    },
+    "truck": {
+      "airplane": 8.4,
+      "bicycle": 3.6,
+      "bus": 2.4,
+      "car": 9.2,
+      "helicopter": 5.0,
+      "motorcycle": 3.0,
+      "train": 0.0,
+      "truck": 68.4
+    }
+  },
+  "matrix_count": {
+    "airplane": {
+      "airplane": 413,
+      "bicycle": 9,
+      "bus": 9,
+      "car": 6,
+      "helicopter": 19,
+      "motorcycle": 10,
+      "train": 3,
+      "truck": 31
+    },
+    "bicycle": {
+      "airplane": 1,
+      "bicycle": 488,
+      "bus": 0,
+      "car": 2,
+      "helicopter": 6,
+      "motorcycle": 2,
+      "train": 0,
+      "truck": 1
+    },
+    "bus": {
+      "airplane": 5,
+      "bicycle": 0,
+      "bus": 494,
+      "car": 0,
+      "helicopter": 0,
+      "motorcycle": 1,
+      "train": 0,
+      "truck": 0
+    },
+    "car": {
+      "airplane": 13,
+      "bicycle": 7,
+      "bus": 0,
+      "car": 447,
+      "helicopter": 9,
+      "motorcycle": 12,
+      "train": 0,
+      "truck": 12
+    },
+    "helicopter": {
+      "airplane": 19,
+      "bicycle": 61,
+      "bus": 14,
+      "car": 15,
+      "helicopter": 329,
+      "motorcycle": 30,
+      "train": 4,
+      "truck": 28
+    },
+    "motorcycle": {
+      "airplane": 9,
+      "bicycle": 9,
+      "bus": 13,
+      "car": 15,
+      "helicopter": 10,
+      "motorcycle": 426,
+      "train": 10,
+      "truck": 8
+    },
+    "train": {
+      "airplane": 4,
+      "bicycle": 6,
+      "bus": 1,
+      "car": 6,
+      "helicopter": 4,
+      "motorcycle": 11,
+      "train": 464,
+      "truck": 4
+    },
+    "truck": {
+      "airplane": 42,
+      "bicycle": 18,
+      "bus": 12,
+      "car": 46,
+      "helicopter": 25,
+      "motorcycle": 15,
+      "train": 0,
+      "truck": 342
+    }
+  },
+  "top_confusions": [
+    {
+      "true_class": "helicopter",
+      "pred_class": "bicycle",
+      "pct": 12.2
+    },
+    {
+      "true_class": "truck",
+      "pred_class": "car",
+      "pct": 9.2
+    },
+    {
+      "true_class": "truck",
+      "pred_class": "airplane",
+      "pct": 8.4
+    },
+    {
+      "true_class": "airplane",
+      "pred_class": "truck",
+      "pct": 6.2
+    },
+    {
+      "true_class": "helicopter",
+      "pred_class": "motorcycle",
+      "pct": 6.0
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "k": 10,
+  "sample": null,
+  "class_metrics": {
+    "airplane": {
+      "precision_at_k": 0.8079999999999999,
+      "recall_at_k": 0.08161616161616163,
+      "map_at_k": 0.8581822877299068,
+      "count": 100
+    },
+    "bicycle": {
+      "precision_at_k": 0.93,
+      "recall_at_k": 0.0939393939393939,
+      "map_at_k": 0.9836441153313177,
+      "count": 100
+    },
+    "bus": {
+      "precision_at_k": 0.986,
+      "recall_at_k": 0.09959595959595959,
+      "map_at_k": 0.9884668209876543,
+      "count": 100
+    },
+    "car": {
+      "precision_at_k": 0.8640000000000001,
+      "recall_at_k": 0.08727272727272722,
+      "map_at_k": 0.9285453640715545,
+      "count": 100
+    },
+    "helicopter": {
+      "precision_at_k": 0.573,
+      "recall_at_k": 0.057878787878787884,
+      "map_at_k": 0.7876562090576971,
+      "count": 100
+    },
+    "motorcycle": {
+      "precision_at_k": 0.8340000000000001,
+      "recall_at_k": 0.08424242424242424,
+      "map_at_k": 0.8947822467876039,
+      "count": 100
+    },
+    "train": {
+      "precision_at_k": 0.927,
+      "recall_at_k": 0.09363636363636361,
+      "map_at_k": 0.9352038690476189,
+      "count": 100
+    },
+    "truck": {
+      "precision_at_k": 0.628,
+      "recall_at_k": 0.06343434343434344,
+      "map_at_k": 0.7574754062736208,
+      "count": 100
+    }
+  },
+  "overall": {
+    "precision_at_k": 0.8187500000000001,
+    "recall_at_k": 0.0827020202020202,
+    "map_at_k": 0.8917445399108717,
+    "total_queries": 800,
+    "errors": 0
+  }
+}

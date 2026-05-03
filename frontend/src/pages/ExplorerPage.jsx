@@ -1,6 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
-import { fetchAudioList, fetchAudioById, deleteAudio } from "../api/client";
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  fetchAudioList,
+  fetchAudioById,
+  deleteAudio,
+  fetchStats,
+} from "../api/client";
 
+const BASE = "http://localhost:8000";
 const CLASS_OPTIONS = [
   "",
   "airplane",
@@ -14,26 +20,62 @@ const CLASS_OPTIONS = [
 ];
 const PAGE_SIZE = 20;
 
+function AudioPlayer({ id }) {
+  const audioRef = useRef();
+  const [playing, setPlaying] = useState(false);
+  const toggle = (e) => {
+    e.stopPropagation();
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current.play();
+      setPlaying(true);
+    }
+  };
+  return (
+    <div className="flex items-center">
+      <button
+        onClick={toggle}
+        className="w-7 h-7 border border-[#2a2a2a] text-[#888] hover:text-[#e8e4dc] hover:border-[#555] text-xs transition-colors flex items-center justify-center"
+      >
+        {playing ? "■" : "▶"}
+      </button>
+      <audio
+        ref={audioRef}
+        src={`${BASE}/api/audio/${id}/stream`}
+        onEnded={() => setPlaying(false)}
+      />
+    </div>
+  );
+}
+
 export default function ExplorerPage() {
   const [items, setItems] = useState([]);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filterClass, setFilter] = useState("");
   const [offset, setOffset] = useState(0);
-  const [selected, setSelected] = useState(null); // detail modal
+  const [selected, setSelected] = useState(null);
   const [detailLoading, setDL] = useState(false);
-  const [deleteId, setDeleteId] = useState(null); // confirm delete
+  const [deleteId, setDeleteId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchAudioList({
-        class_label: filterClass || undefined,
-        limit: PAGE_SIZE,
-        offset,
-      });
+      const [data, s] = await Promise.all([
+        fetchAudioList({
+          class_label: filterClass || undefined,
+          limit: PAGE_SIZE,
+          offset,
+        }),
+        fetchStats(),
+      ]);
       setItems(data);
+      setStats(s);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -74,33 +116,66 @@ export default function ExplorerPage() {
     }
   };
 
+  const displayCount =
+    filterClass && stats
+      ? (stats.by_class?.[filterClass] ?? 0)
+      : (stats?.total ?? 0);
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight mb-1">Explorer</h2>
-        <p className="text-[#555] text-sm">
-          Browse and manage audio files in the database.
-        </p>
+      {/* Header */}
+      <div className="flex items-end justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight mb-1">Explorer</h2>
+          <p className="text-[#555] text-sm">
+            Browse and manage audio files in the database.
+          </p>
+        </div>
+        {stats && (
+          <div className="text-right">
+            <p className="text-3xl font-bold text-[#e8e4dc]">{displayCount}</p>
+            <p className="text-[10px] tracking-widest text-[#444] uppercase mt-0.5">
+              {filterClass ? `files · ${filterClass}` : "files in database"}
+            </p>
+            <p className="text-[10px] tracking-widest text-[#333] uppercase">
+              showing {offset + 1}–{offset + items.length}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-4 items-end">
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] tracking-widest text-[#555] uppercase">
-            Class
-          </label>
-          <select
-            value={filterClass}
-            onChange={(e) => handleFilterChange(e.target.value)}
-            className="bg-[#1a1a1a] border border-[#2a2a2a] text-[#e8e4dc] px-3 py-2 text-sm focus:outline-none focus:border-[#555]"
+      {/* Class pills */}
+      {stats && (
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => handleFilterChange("")}
+            className={`px-3 py-1 text-[10px] tracking-widest uppercase transition-colors ${
+              filterClass === ""
+                ? "bg-[#e8e4dc] text-[#0e0e0e]"
+                : "border border-[#2a2a2a] text-[#555] hover:text-[#e8e4dc]"
+            }`}
           >
-            {CLASS_OPTIONS.map((c) => (
-              <option key={c} value={c}>
-                {c || "All classes"}
-              </option>
+            All ({stats.total})
+          </button>
+          {Object.entries(stats.by_class ?? {})
+            .sort(([, a], [, b]) => b - a)
+            .map(([cls, count]) => (
+              <button
+                key={cls}
+                onClick={() => handleFilterChange(cls)}
+                className={`px-3 py-1 text-[10px] tracking-widest uppercase transition-colors ${
+                  filterClass === cls
+                    ? "bg-[#e8e4dc] text-[#0e0e0e]"
+                    : "border border-[#2a2a2a] text-[#555] hover:text-[#e8e4dc]"
+                }`}
+              >
+                {cls} ({count})
+              </button>
             ))}
-          </select>
         </div>
+      )}
+
+      <div className="flex justify-end">
         <button
           onClick={load}
           className="px-4 py-2 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#555] hover:text-[#e8e4dc] hover:border-[#444] transition-colors"
@@ -111,16 +186,14 @@ export default function ExplorerPage() {
 
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
-      {/* Table */}
       {loading ? (
         <div className="py-16 text-center text-[#333] text-sm tracking-widest uppercase">
           Loading...
         </div>
       ) : (
         <div className="border border-[#1e1e1e]">
-          {/* Header */}
-          <div className="grid grid-cols-[3rem_1fr_8rem_6rem_5rem] border-b border-[#1e1e1e] px-4 py-2">
-            {["ID", "Filename", "Class", "Duration", ""].map((h, i) => (
+          <div className="grid grid-cols-[3rem_1fr_8rem_6rem_4rem_5rem] border-b border-[#1e1e1e] px-4 py-2">
+            {["ID", "Filename", "Class", "Duration", "Play", ""].map((h, i) => (
               <span
                 key={i}
                 className="text-[10px] tracking-widest text-[#444] uppercase"
@@ -137,7 +210,7 @@ export default function ExplorerPage() {
           {items.map((item) => (
             <div
               key={item.id}
-              className="grid grid-cols-[3rem_1fr_8rem_6rem_5rem] px-4 py-3 border-b border-[#131313] hover:bg-[#141414] transition-colors items-center"
+              className="grid grid-cols-[3rem_1fr_8rem_6rem_4rem_5rem] px-4 py-3 border-b border-[#131313] hover:bg-[#141414] transition-colors items-center"
             >
               <span className="text-xs text-[#444]">{item.id}</span>
               <span className="text-sm text-[#e8e4dc] truncate pr-4">
@@ -147,6 +220,7 @@ export default function ExplorerPage() {
               <span className="text-xs text-[#555]">
                 {item.duration_sec?.toFixed(2)}s
               </span>
+              <AudioPlayer id={item.id} />
               <div className="flex gap-3">
                 <button
                   onClick={() => openDetail(item.id)}
@@ -167,7 +241,7 @@ export default function ExplorerPage() {
       )}
 
       {/* Pagination */}
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-3 justify-end items-center">
         <button
           onClick={() => setOffset((o) => Math.max(0, o - PAGE_SIZE))}
           disabled={offset === 0}
@@ -175,7 +249,7 @@ export default function ExplorerPage() {
         >
           Prev
         </button>
-        <span className="text-xs text-[#444] py-2">
+        <span className="text-xs text-[#444]">
           {offset + 1} – {offset + items.length}
         </span>
         <button
@@ -215,14 +289,13 @@ export default function ExplorerPage() {
                       ✕
                     </button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-3 mb-6">
                     {[
                       ["ID", selected.id],
                       ["Filename", selected.filename],
                       ["Class", selected.class_label],
                       ["Duration", `${selected.duration_sec?.toFixed(3)}s`],
                       ["Sample Rate", `${selected.sample_rate} Hz`],
-                      ["Path", selected.file_path],
                       ["Created", selected.created_at ?? "—"],
                     ].map(([k, v]) => (
                       <div key={k} className="flex gap-4 text-sm">
@@ -233,9 +306,15 @@ export default function ExplorerPage() {
                       </div>
                     ))}
                   </div>
+                  <div className="flex items-center gap-3 mb-6 border-t border-[#1e1e1e] pt-4">
+                    <span className="text-[10px] tracking-widest text-[#444] uppercase">
+                      Preview
+                    </span>
+                    <AudioPlayer id={selected.id} />
+                  </div>
                   <button
                     onClick={() => setDeleteId(selected.id)}
-                    className="mt-8 px-4 py-2 border border-red-900 text-red-500 text-xs tracking-widest uppercase hover:bg-red-900/20 transition-colors"
+                    className="px-4 py-2 border border-red-900 text-red-500 text-xs tracking-widest uppercase hover:bg-red-900/20 transition-colors"
                   >
                     Delete this file
                   </button>

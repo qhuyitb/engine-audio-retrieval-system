@@ -32,3 +32,11 @@ Thumbs.db
 
 qdrant_storage/
 
+.venv/
+/.venv
+.venv/*
+*.venv/
+qdrant_storage
+/qdrant_storage
+*qdrant_storage
+qdrant_storage*

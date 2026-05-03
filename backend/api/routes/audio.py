@@ -48,3 +48,20 @@ def remove_audio(point_id: int):
         raise HTTPException(status_code=404, detail=f"Không tìm thấy id={point_id}")
     delete_point(point_id)
     return {"message": f"Đã xóa point id={point_id}"}
+
+
+""" 
+api reponsive file audio   Đức =>>
+"""
+from fastapi.responses import FileResponse
+import os
+
+@router.get("/audio/{point_id}/stream")
+def stream_audio(point_id: int):
+    result = get_point(point_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"Không tìm thấy id={point_id}")
+    path = result["file_path"]
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="File không tồn tại trên disk")
+    return FileResponse(path, media_type="audio/wav")

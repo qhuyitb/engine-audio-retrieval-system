@@ -1,3 +1,4 @@
+// pages/StatsPage.jsx
 import { useState, useEffect } from "react";
 import { fetchStats, fetchCollectionInfo } from "../api/client";
 
@@ -33,67 +34,64 @@ export default function StatsPage() {
     <div className="space-y-10">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight mb-1">Stats</h2>
-          <p className="text-[#555] text-sm">
+          <h2 className="text-3xl font-bold tracking-tight mb-2">Stats</h2>
+          <p className="text-gray-600 text-base">
             Dataset overview and collection health.
           </p>
         </div>
         <button
           onClick={load}
-          className="px-4 py-2 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#555] hover:text-[#e8e4dc] hover:border-[#444] transition-colors"
+          className="px-5 py-2 border border-gray-300 text-sm uppercase tracking-wider text-gray-700 hover:bg-gray-100 transition-colors"
         >
           Refresh
         </button>
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-
+      {error && <p className="text-red-600 text-sm">{error}</p>}
       {loading && (
-        <div className="py-16 text-center text-[#333] text-sm tracking-widest uppercase">
+        <div className="py-20 text-center text-gray-500 text-sm uppercase tracking-wider">
           Loading...
         </div>
       )}
 
       {stats && (
-        <div className="space-y-6">
-          {/* Total */}
-          <div className="border border-[#1e1e1e] px-6 py-5 flex gap-8 items-end">
+        <div className="space-y-8">
+          <div className="border border-gray-200 px-8 py-6 flex gap-12 items-end bg-white rounded shadow-sm">
             <div>
-              <p className="text-[10px] tracking-widest text-[#555] uppercase mb-1">
+              <p className="text-xs tracking-wider text-gray-500 uppercase mb-1">
                 Total Files
               </p>
-              <p className="text-4xl font-bold text-[#e8e4dc]">{stats.total}</p>
+              <p className="text-5xl font-bold text-gray-900">{stats.total}</p>
             </div>
             <div>
-              <p className="text-[10px] tracking-widest text-[#555] uppercase mb-1">
+              <p className="text-xs tracking-wider text-gray-500 uppercase mb-1">
                 Classes
               </p>
-              <p className="text-4xl font-bold text-[#e8e4dc]">
+              <p className="text-5xl font-bold text-gray-900">
                 {Object.keys(stats.by_class ?? {}).length}
               </p>
             </div>
           </div>
 
-          {/* By class bar chart */}
-          <div className="border border-[#1e1e1e] px-6 py-5">
-            <p className="text-[10px] tracking-widest text-[#555] uppercase mb-5">
+          <div className="border border-gray-200 px-8 py-6 bg-white rounded shadow-sm">
+            <p className="text-xs tracking-wider text-gray-500 uppercase mb-6 font-semibold">
               Files by Class
             </p>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {Object.entries(stats.by_class ?? {})
                 .sort(([, a], [, b]) => b - a)
                 .map(([cls, count]) => (
-                  <div key={cls} className="flex items-center gap-4">
-                    <span className="text-xs text-[#666] w-24 shrink-0 truncate">
+                  <div key={cls} className="flex items-center gap-5">
+                    <span className="text-sm text-gray-700 w-28 shrink-0 truncate font-medium">
                       {cls}
                     </span>
-                    <div className="flex-1 h-1 bg-[#1a1a1a]">
+                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-1 bg-[#e8e4dc] transition-all duration-500"
+                        className="h-2 bg-blue-600 rounded-full transition-all duration-500"
                         style={{ width: `${(count / maxVal) * 100}%` }}
                       />
                     </div>
-                    <span className="text-xs text-[#555] w-10 text-right shrink-0">
+                    <span className="text-sm text-gray-700 w-12 text-right shrink-0">
                       {count}
                     </span>
                   </div>
@@ -103,19 +101,18 @@ export default function StatsPage() {
         </div>
       )}
 
-      {/* Collection info */}
       {collection && (
-        <div className="border border-[#1e1e1e] px-6 py-5">
-          <p className="text-[10px] tracking-widest text-[#555] uppercase mb-5">
+        <div className="border border-gray-200 px-8 py-6 bg-white rounded shadow-sm">
+          <p className="text-xs tracking-wider text-gray-500 uppercase mb-6 font-semibold">
             Qdrant Collection
           </p>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {Object.entries(collection).map(([k, v]) => (
-              <div key={k} className="flex gap-4 text-sm">
-                <span className="text-[#444] w-40 shrink-0 text-xs uppercase tracking-widest">
+              <div key={k} className="flex gap-5 text-sm">
+                <span className="text-gray-600 w-44 shrink-0 text-xs uppercase tracking-wider">
                   {k}
                 </span>
-                <span className="text-[#888] break-all">
+                <span className="text-gray-800 break-all">
                   {typeof v === "object" ? JSON.stringify(v) : String(v)}
                 </span>
               </div>

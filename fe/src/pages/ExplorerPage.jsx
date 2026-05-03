@@ -1,3 +1,4 @@
+// pages/ExplorerPage.jsx
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   fetchAudioList,
@@ -38,7 +39,7 @@ function AudioPlayer({ id }) {
     <div className="flex items-center">
       <button
         onClick={toggle}
-        className="w-7 h-7 border border-[#2a2a2a] text-[#888] hover:text-[#e8e4dc] hover:border-[#555] text-xs transition-colors flex items-center justify-center"
+        className="w-8 h-8 border border-gray-300 text-blue-600 hover:text-black hover:border-blue-500 text-sm transition-all flex items-center justify-center rounded"
       >
         {playing ? "■" : "▶"}
       </button>
@@ -91,7 +92,6 @@ export default function ExplorerPage() {
     setFilter(v);
     setOffset(0);
   };
-
   const openDetail = async (id) => {
     setDL(true);
     setSelected(null);
@@ -103,7 +103,6 @@ export default function ExplorerPage() {
       setDL(false);
     }
   };
-
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
@@ -115,45 +114,38 @@ export default function ExplorerPage() {
       setError(e.message);
     }
   };
-
   const displayCount =
     filterClass && stats
       ? (stats.by_class?.[filterClass] ?? 0)
       : (stats?.total ?? 0);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
       <div className="flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight mb-1">Explorer</h2>
-          <p className="text-[#555] text-sm">
+          <h2 className="text-3xl font-bold tracking-tight mb-2">Explorer</h2>
+          <p className="text-gray-600 text-base">
             Browse and manage audio files in the database.
           </p>
         </div>
         {stats && (
           <div className="text-right">
-            <p className="text-3xl font-bold text-[#e8e4dc]">{displayCount}</p>
-            <p className="text-[10px] tracking-widest text-[#444] uppercase mt-0.5">
+            <p className="text-4xl font-bold text-gray-900">{displayCount}</p>
+            <p className="text-xs tracking-wider text-gray-500 uppercase mt-1">
               {filterClass ? `files · ${filterClass}` : "files in database"}
             </p>
-            <p className="text-[10px] tracking-widest text-[#333] uppercase">
+            <p className="text-xs text-gray-400 uppercase">
               showing {offset + 1}–{offset + items.length}
             </p>
           </div>
         )}
       </div>
 
-      {/* Class pills */}
       {stats && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-3">
           <button
             onClick={() => handleFilterChange("")}
-            className={`px-3 py-1 text-[10px] tracking-widest uppercase transition-colors ${
-              filterClass === ""
-                ? "bg-[#e8e4dc] text-[#0e0e0e]"
-                : "border border-[#2a2a2a] text-[#555] hover:text-[#e8e4dc]"
-            }`}
+            className={`px-4 py-2 text-xs tracking-wider uppercase font-medium transition-colors ${filterClass === "" ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-100"}`}
           >
             All ({stats.total})
           </button>
@@ -163,11 +155,7 @@ export default function ExplorerPage() {
               <button
                 key={cls}
                 onClick={() => handleFilterChange(cls)}
-                className={`px-3 py-1 text-[10px] tracking-widest uppercase transition-colors ${
-                  filterClass === cls
-                    ? "bg-[#e8e4dc] text-[#0e0e0e]"
-                    : "border border-[#2a2a2a] text-[#555] hover:text-[#e8e4dc]"
-                }`}
+                className={`px-4 py-2 text-xs tracking-wider uppercase font-medium ${filterClass === cls ? "bg-blue-600 text-white" : "border border-gray-300 text-gray-700 hover:bg-gray-100"}`}
               >
                 {cls} ({count})
               </button>
@@ -178,59 +166,59 @@ export default function ExplorerPage() {
       <div className="flex justify-end">
         <button
           onClick={load}
-          className="px-4 py-2 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#555] hover:text-[#e8e4dc] hover:border-[#444] transition-colors"
+          className="px-5 py-2 border border-gray-300 text-sm uppercase tracking-wider text-gray-700 hover:bg-gray-100 transition-colors"
         >
           Refresh
         </button>
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {loading ? (
-        <div className="py-16 text-center text-[#333] text-sm tracking-widest uppercase">
+        <div className="py-20 text-center text-gray-500 text-sm uppercase tracking-wider">
           Loading...
         </div>
       ) : (
-        <div className="border border-[#1e1e1e]">
-          <div className="grid grid-cols-[3rem_1fr_8rem_6rem_4rem_5rem] border-b border-[#1e1e1e] px-4 py-2">
-            {["ID", "Filename", "Class", "Duration", "Play", ""].map((h, i) => (
+        <div className="border border-gray-200 bg-white rounded shadow-sm">
+          <div className="grid grid-cols-[3rem_1fr_8rem_6rem_5rem_6rem] border-b border-gray-200 px-5 py-3 bg-gray-50">
+            {["ID", "Filename", "Class", "Duration", "Play", ""].map((h) => (
               <span
-                key={i}
-                className="text-[10px] tracking-widest text-[#444] uppercase"
+                key={h}
+                className="text-xs tracking-wider text-gray-600 uppercase font-semibold"
               >
                 {h}
               </span>
             ))}
           </div>
           {items.length === 0 && (
-            <div className="py-12 text-center text-[#333] text-sm">
+            <div className="py-16 text-center text-gray-500">
               No files found.
             </div>
           )}
           {items.map((item) => (
             <div
               key={item.id}
-              className="grid grid-cols-[3rem_1fr_8rem_6rem_4rem_5rem] px-4 py-3 border-b border-[#131313] hover:bg-[#141414] transition-colors items-center"
+              className="grid grid-cols-[3rem_1fr_8rem_6rem_5rem_6rem] px-5 py-4 border-b border-gray-100 hover:bg-gray-50 transition-colors items-center"
             >
-              <span className="text-xs text-[#444]">{item.id}</span>
-              <span className="text-sm text-[#e8e4dc] truncate pr-4">
+              <span className="text-sm text-gray-500">{item.id}</span>
+              <span className="text-base text-gray-900 truncate pr-4">
                 {item.filename}
               </span>
-              <span className="text-xs text-[#666]">{item.class_label}</span>
-              <span className="text-xs text-[#555]">
+              <span className="text-sm text-gray-700">{item.class_label}</span>
+              <span className="text-sm text-gray-700">
                 {item.duration_sec?.toFixed(2)}s
               </span>
               <AudioPlayer id={item.id} />
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   onClick={() => openDetail(item.id)}
-                  className="text-[10px] tracking-widest text-[#555] hover:text-[#e8e4dc] uppercase transition-colors"
+                  className="text-xs tracking-wider text-blue-600 hover:text-black uppercase"
                 >
                   View
                 </button>
                 <button
                   onClick={() => setDeleteId(item.id)}
-                  className="text-[10px] tracking-widest text-[#555] hover:text-red-400 uppercase transition-colors"
+                  className="text-xs tracking-wider text-gray-600 hover:text-red-600 uppercase"
                 >
                   Del
                 </button>
@@ -240,56 +228,53 @@ export default function ExplorerPage() {
         </div>
       )}
 
-      {/* Pagination */}
-      <div className="flex gap-3 justify-end items-center">
+      <div className="flex gap-4 justify-end items-center">
         <button
           onClick={() => setOffset((o) => Math.max(0, o - PAGE_SIZE))}
           disabled={offset === 0}
-          className="px-4 py-2 text-xs tracking-widest uppercase text-[#555] hover:text-[#e8e4dc] disabled:opacity-20 transition-colors"
+          className="px-5 py-2 text-sm uppercase tracking-wider text-gray-700 hover:text-black disabled:opacity-30"
         >
           Prev
         </button>
-        <span className="text-xs text-[#444]">
+        <span className="text-sm text-gray-600">
           {offset + 1} – {offset + items.length}
         </span>
         <button
           onClick={() => setOffset((o) => o + PAGE_SIZE)}
           disabled={items.length < PAGE_SIZE}
-          className="px-4 py-2 text-xs tracking-widest uppercase text-[#555] hover:text-[#e8e4dc] disabled:opacity-20 transition-colors"
+          className="px-5 py-2 text-sm uppercase tracking-wider text-gray-700 hover:text-black disabled:opacity-30"
         >
           Next
         </button>
       </div>
 
-      {/* Detail modal */}
+      {/* Detail Modal */}
       {(selected || detailLoading) && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
           onClick={() => setSelected(null)}
         >
           <div
-            className="bg-[#111] border border-[#2a2a2a] p-8 w-full max-w-md"
+            className="bg-white border border-gray-300 p-8 w-full max-w-md shadow-xl rounded"
             onClick={(e) => e.stopPropagation()}
           >
             {detailLoading ? (
-              <p className="text-[#444] text-sm tracking-widest uppercase">
-                Loading...
-              </p>
+              <p className="text-gray-500 text-sm">Loading...</p>
             ) : (
               selected && (
                 <>
                   <div className="flex justify-between items-start mb-6">
-                    <p className="text-[10px] tracking-widest text-[#555] uppercase">
+                    <p className="text-xs tracking-wider text-gray-500 uppercase">
                       Audio Detail
                     </p>
                     <button
                       onClick={() => setSelected(null)}
-                      className="text-[#444] hover:text-[#e8e4dc]"
+                      className="text-gray-500 hover:text-black"
                     >
                       ✕
                     </button>
                   </div>
-                  <div className="space-y-3 mb-6">
+                  <div className="space-y-4 mb-6">
                     {[
                       ["ID", selected.id],
                       ["Filename", selected.filename],
@@ -298,23 +283,23 @@ export default function ExplorerPage() {
                       ["Sample Rate", `${selected.sample_rate} Hz`],
                       ["Created", selected.created_at ?? "—"],
                     ].map(([k, v]) => (
-                      <div key={k} className="flex gap-4 text-sm">
-                        <span className="text-[#444] w-24 shrink-0 text-xs uppercase tracking-widest">
+                      <div key={k} className="flex gap-5 text-base">
+                        <span className="text-blue-600 w-28 shrink-0 text-sm uppercase tracking-wider">
                           {k}
                         </span>
-                        <span className="text-[#e8e4dc] break-all">{v}</span>
+                        <span className="text-gray-900 break-all">{v}</span>
                       </div>
                     ))}
                   </div>
-                  <div className="flex items-center gap-3 mb-6 border-t border-[#1e1e1e] pt-4">
-                    <span className="text-[10px] tracking-widest text-[#444] uppercase">
+                  <div className="flex items-center gap-4 mb-6 pt-4 border-t border-gray-200">
+                    <span className="text-xs tracking-wider text-gray-500 uppercase">
                       Preview
                     </span>
                     <AudioPlayer id={selected.id} />
                   </div>
                   <button
                     onClick={() => setDeleteId(selected.id)}
-                    className="px-4 py-2 border border-red-900 text-red-500 text-xs tracking-widest uppercase hover:bg-red-900/20 transition-colors"
+                    className="px-5 py-2 border border-red-700 text-red-700 text-sm uppercase tracking-wider hover:bg-red-50"
                   >
                     Delete this file
                   </button>
@@ -325,24 +310,23 @@ export default function ExplorerPage() {
         </div>
       )}
 
-      {/* Delete confirm */}
       {deleteId && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-          <div className="bg-[#111] border border-[#2a2a2a] p-8 w-full max-w-sm text-center space-y-5">
-            <p className="text-sm text-[#e8e4dc]">Delete id={deleteId}?</p>
-            <p className="text-xs text-[#555]">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white border border-gray-300 p-8 w-full max-w-md text-center space-y-5 shadow-xl">
+            <p className="text-base text-gray-900">Delete id={deleteId}?</p>
+            <p className="text-sm text-gray-600">
               This will remove the point from Qdrant permanently.
             </p>
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-4 justify-center">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-5 py-2 border border-[#2a2a2a] text-xs tracking-widest uppercase text-[#555] hover:text-[#e8e4dc]"
+                className="px-6 py-2 border border-gray-300 text-sm uppercase tracking-wider text-gray-700 hover:bg-gray-100"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-5 py-2 bg-red-900 text-red-200 text-xs tracking-widest uppercase hover:bg-red-800 transition-colors"
+                className="px-6 py-2 bg-red-700 text-white text-sm uppercase tracking-wider hover:bg-red-800"
               >
                 Confirm Delete
               </button>

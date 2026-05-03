@@ -2,11 +2,13 @@ import { useState } from "react";
 import ExplorerPage from "./pages/ExplorerPage";
 import SearchPage from "./pages/SearchPage";
 import StatsPage from "./pages/StatsPage";
+import EvaluationPage from "./pages/EvaluationPage";
 
 const TABS = [
   { id: "search", label: "Search" },
   { id: "explorer", label: "Explorer" },
   { id: "stats", label: "Stats" },
+  { id: "evaluation", label: "Evaluation" },
 ];
 
 export default function App() {
@@ -14,7 +16,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0e0e0e] text-[#e8e4dc] font-mono">
-      {/* Header */}
       <header className="border-b border-[#2a2a2a] px-8 py-5 flex items-center justify-between">
         <div>
           <p className="text-[10px] tracking-[0.25em] text-[#555] uppercase mb-1">
@@ -41,11 +42,11 @@ export default function App() {
         </nav>
       </header>
 
-      {/* Page */}
       <main className="max-w-5xl mx-auto px-8 py-10">
         {tab === "search" && <SearchPage />}
         {tab === "explorer" && <ExplorerPage />}
         {tab === "stats" && <StatsPage />}
+        {tab === "evaluation" && <EvaluationPage />}
       </main>
     </div>
   );

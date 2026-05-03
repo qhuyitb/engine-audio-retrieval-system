@@ -5,7 +5,8 @@ Retrieval engine: nhận file .wav → trả top-5 giống nhất.
 
 Flow:
     file .wav
-        → load + normalize biên độ
+        → load audio (resample về 22050 Hz + convert to mono)
+        → audio preprocessing (normalize biên độ + trim/pad về 5s)
         → extract features (72 dims)
         → StandardScaler
         → L2 normalize
@@ -16,7 +17,7 @@ Flow:
 import numpy as np
 import librosa
 from pathlib import Path
-
+import soundfile as sf
 from backend.features.extractor import get_all_feature_names, _load_scaler
 from backend.features.mfcc      import extract_mfcc_features
 from backend.features.temporal  import extract_temporal_features
@@ -74,27 +75,44 @@ def retrieve(
     if not filepath.exists():
         raise FileNotFoundError(f"Không tìm thấy file: {filepath}")
 
-    # ── Bước 1: Load audio ─────────────────────────────────────────────────────
+    # ── Bước 1: Load audio ────────────────────────────────────────────────────
+    info = sf.info(str(filepath))
+    original_channels = info.channels
+    original_sr = info.samplerate
+
+   
     y, sr = librosa.load(str(filepath), sr=TARGET_SR, mono=True)
     duration = round(librosa.get_duration(y=y, sr=sr), 3)
-
-    # Normalize biên độ
-    if np.max(np.abs(y)) > 0:
-        y = y / np.max(np.abs(y))
-
-    # Pad nếu quá ngắn
-    min_samples = sr // 2
-    if len(y) < min_samples:
-        y = np.pad(y, (0, min_samples - len(y)))
+    max_amplitude = round(float(np.max(np.abs(y))), 4) 
 
     step_load = {
-        "step"       : "Load audio",
-        "sample_rate": sr,
-        "duration"   : duration,
-        "samples"    : len(y),
+        "step"        : "Load audio",
+        "original_sr" : original_sr,
+        "original_ch" : "mono" if original_channels == 1 else "stereo",
+        "duration"    : duration,
+        "samples" : round(info.duration * original_sr),
     }
 
-    # ── Bước 2: Extract features ───────────────────────────────────────────────
+    # ── Bước 2: Audio preprocessing ───────────────────────────────────────────
+    if np.max(np.abs(y)) > 0:
+        y = y / np.max(np.abs(y))
+    target_samples = sr * 5
+    if len(y) > target_samples:
+        y = y[:target_samples]       # trim còn 5s
+    elif len(y) < target_samples:
+        y = np.pad(y, (0, target_samples - len(y)))  # pad lên 5s
+
+    step_preprocess = {
+        "step"     : "Audio preprocessing",
+        "convert"  : f"{original_channels}ch → mono" if original_channels > 1 else "mono (giữ nguyên)",
+        "resample" : f"{original_sr} Hz → {sr} Hz" if original_sr != sr else f"{sr} Hz (giữ nguyên)",
+        "normalize": f"{max_amplitude} → 1.0",
+        "padded"   : f"{duration}s → 5.0s" if duration < 5.0 else False,
+        "trimmed"  : f"{duration}s → 5.0s" if duration > 5.0 else False,
+    }
+    
+
+    # ── Bước 3: Extract features ───────────────────────────────────────────────
     # Lấy vector sau StandardScaler nhưng CHƯA L2 normalize
     # để log norm_before thực tế
     vector_raw, meta = _extract_raw_vector(y, sr)
@@ -112,7 +130,7 @@ def retrieve(
         },
     }
 
-    # ── Bước 3: L2 normalize ───────────────────────────────────────────────────
+    # ── Bước 4: L2 normalize ───────────────────────────────────────────────────
     norm_before = float(np.linalg.norm(vector_raw))
     if norm_before > 0:
         vector_normalized = vector_raw / norm_before
@@ -125,7 +143,7 @@ def retrieve(
         "norm_after" : round(float(np.linalg.norm(vector_normalized)), 4),  # = 1.0
     }
 
-    # ── Bước 4: Qdrant search ──────────────────────────────────────────────────
+    # ── Bước 5: Qdrant search ──────────────────────────────────────────────────
     results = search_similar(
         query_vector = vector_normalized,
         top_k        = top_k,
@@ -147,7 +165,7 @@ def retrieve(
             "duration_sec": duration,
             "sample_rate" : sr,
         },
-        "steps"  : [step_load, step_extract, step_normalize, step_search],
+        "steps"  : [step_load, step_preprocess, step_extract, step_normalize, step_search],
         "results": results,
     }
 

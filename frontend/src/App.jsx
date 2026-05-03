@@ -1,3 +1,4 @@
+// App.jsx
 import { useState } from "react";
 import ExplorerPage from "./pages/ExplorerPage";
 import SearchPage from "./pages/SearchPage";
@@ -15,25 +16,25 @@ export default function App() {
   const [tab, setTab] = useState("search");
 
   return (
-    <div className="min-h-screen bg-[#0e0e0e] text-[#e8e4dc] font-mono">
-      <header className="border-b border-[#2a2a2a] px-8 py-5 flex items-center justify-between">
+    <div className="min-h-screen bg-white text-gray-900 font-sans">
+      <header className="border-b border-gray-200 px-8 py-6 flex items-center justify-between bg-white shadow-sm">
         <div>
-          <p className="text-[10px] tracking-[0.25em] text-[#555] uppercase mb-1">
+          <p className="text-xs tracking-widest text-gray-500 uppercase mb-1">
             Multimedia Database
           </p>
-          <h1 className="text-lg font-bold tracking-tight text-[#e8e4dc]">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Engine Audio Retrieval
           </h1>
         </div>
-        <nav className="flex gap-1">
+        <nav className="flex gap-2">
           {TABS.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`px-4 py-2 text-xs tracking-widest uppercase transition-all duration-200 ${
+              className={`px-5 py-2 text-sm tracking-wider uppercase font-medium transition-all duration-200 ${
                 tab === t.id
-                  ? "bg-[#e8e4dc] text-[#0e0e0e] font-bold"
-                  : "text-[#555] hover:text-[#e8e4dc] hover:bg-[#1a1a1a]"
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-gray-700 hover:text-black hover:bg-gray-100"
               }`}
             >
               {t.label}
@@ -42,7 +43,7 @@ export default function App() {
         </nav>
       </header>
 
-      <main className="max-w-5xl mx-auto px-8 py-10">
+      <main className="max-w-6xl mx-auto px-8 py-12">
         {tab === "search" && <SearchPage />}
         {tab === "explorer" && <ExplorerPage />}
         {tab === "stats" && <StatsPage />}

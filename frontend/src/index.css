@@ -1,22 +1,50 @@
+/* index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  box-sizing: border-box;
+:root {
+  background-color: #ffffff;
+  color: #000000;
 }
 
+body {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.5;
+  background-color: #ffffff;
+  color: #111111;
+}
+
+/* Larger base for all interactive elements */
+button,
+input,
+select,
+textarea {
+  font-size: 0.95rem;
+}
+
+/* Scrollbar light theme */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #0e0e0e;
+  background: #f0f0f0;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2a2a2a;
+  background: #aaaaaa;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888888;
 }
 
 ::selection {
-  background: #e8e4dc;
-  color: #0e0e0e;
+  background: #0066ff;
+  color: #ffffff;
 }
